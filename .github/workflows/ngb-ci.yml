@@ -55,7 +55,7 @@ jobs:
         run: |
           echo "version=$(./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //')"
           echo $version
-          echo "VERSION_NUMBER=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+          echo "VERSION_NUMBER=$version" | >> $GITHUB_ENV
 
       - uses: actions/setup-node@v3
         with:
