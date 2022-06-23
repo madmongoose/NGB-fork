@@ -44,12 +44,12 @@ jobs:
           java-version: "8"
           cache: "gradle"
       
-      #- name: Correcting a Build Number
-        #run: echo "BUILD_NUMBER=$(echo $((${{ github.run_number }}+653)))" >> $GITHUB_ENV
+      - name: Correcting a Build Number
+        run: echo "BUILD_NUMBER=$(echo $((${{ github.run_number }}+653)))" >> $GITHUB_ENV
       #- run: echo $BUILD_NUMBER
-      - name: Get Current Version
-        run: echo "NGB_VER=$(./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //')" >> $GITHUB_ENV
-      - run : echo $NGB_VER
+      #- name: Get Current Version
+        #run: echo "NGB_VER=$(./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //')" >> $GITHUB_ENV
+      #- run : echo $NGB_VER
       - uses: actions/setup-node@v3
         with:
           node-version: 8
@@ -64,7 +64,7 @@ jobs:
         if: "!contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.NGB_VER }}.${{ github.sha }} -PnoTest
+          arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.BUILD_NUMBER }}.${{ github.sha }} -PnoTest
 
       - name: Gradle Build Action with Docker
         if: "contains(github.ref_name, 'release')"
