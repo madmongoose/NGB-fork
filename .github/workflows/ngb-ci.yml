@@ -52,7 +52,7 @@ jobs:
       # - run : echo $NGB_VER
 
       - name: Set version number
-        run: ./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //'
+        run: ./gradlew :printVersion -PbuildNumber=555
 
       - uses: actions/setup-node@v3
         with:
