@@ -54,8 +54,7 @@ jobs:
       - name: Set version number
         run: |
           echo "version=$(./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //')"
-          echo $version
-          echo "VERSION_NUMBER=$version" | >> $GITHUB_ENV
+          echo $version >> $GITHUB_ENV
 
       - uses: actions/setup-node@v3
         with:
@@ -67,17 +66,17 @@ jobs:
           python-version: '3.9'  
       - run: python3 -m pip install mkdocs mkdocs-material
       
-      - name: Gradle Build Action
-        if: "!contains(github.ref_name, 'release')"
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.VERSION_NUMBER }}.${{ github.sha }} -PnoTest --debug
+      # - name: Gradle Build Action
+      #   if: "!contains(github.ref_name, 'release')"
+      #   uses: gradle/gradle-build-action@v2
+      #   with:
+      - run: ./gradlew buildJar buildCli buildDoc -PbuildNumber=${{ env.version }}.${{ github.sha }} -PnoTest --debug
 
       - name: Gradle Build Action with Docker
         if: "contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.VERSION_NUMBER }}.${{ github.sha }} -PnoTest
+          arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.version }}.${{ github.sha }} -PnoTest
 
       - name: Gradle Coverage Action
         uses: gradle/gradle-build-action@v2
