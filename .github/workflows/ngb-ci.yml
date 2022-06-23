@@ -48,7 +48,7 @@ jobs:
         run: echo "BUILD_NUMBER=$(echo $((${{ github.run_number }}+653)))" >> $GITHUB_ENV
          
       - name: Get Current Version
-        run: echo "NGB_VER=$(./gradlew :printVersion -PbuildNumber=$BUILD_NUMBER |  grep "Project version is " | sed 's/^.*is //')" >> $GITHUB_ENV
+        run: echo "NGB_VER=$(./gradlew :printVersion -PbuildNumber=${{ env.BUILD_NUMBER }} |  grep "Project version is " | sed 's/^.*is //')" >> $GITHUB_ENV
       
       - uses: actions/setup-node@v3
         with:
