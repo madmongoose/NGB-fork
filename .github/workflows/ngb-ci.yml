@@ -53,8 +53,8 @@ jobs:
 
       - name: Set version number
         run: |
-          echo "version=$(./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //')"
-          echo $version >> $GITHUB_ENV
+          NGBTEST=$(./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //')
+          echo $NGBTEST >> $GITHUB_ENV
 
       - uses: actions/setup-node@v3
         with:
@@ -70,13 +70,13 @@ jobs:
       #   if: "!contains(github.ref_name, 'release')"
       #   uses: gradle/gradle-build-action@v2
       #   with:
-      - run: ./gradlew buildJar buildCli buildDoc -PbuildNumber=${{ env.version }}.${{ github.sha }} -PnoTest --debug
+      - run: ./gradlew buildJar buildCli buildDoc -PbuildNumber=${{ env.NGBTEST }}.${{ github.sha }} -PnoTest --debug
 
       - name: Gradle Build Action with Docker
         if: "contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.version }}.${{ github.sha }} -PnoTest
+          arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.NGBTEST }}.${{ github.sha }} -PnoTest
 
       - name: Gradle Coverage Action
         uses: gradle/gradle-build-action@v2
