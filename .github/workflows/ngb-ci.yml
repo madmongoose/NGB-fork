@@ -64,7 +64,7 @@ jobs:
         if: "!contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.BUILD_NUMBER }}.${{ github.sha }} -PnoTest
+          arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.NGB_VER }}.${{ github.sha }} -PnoTest
 
       - name: Gradle Build Action with Docker
         if: "contains(github.ref_name, 'release')"
