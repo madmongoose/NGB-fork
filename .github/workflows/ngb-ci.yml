@@ -53,7 +53,7 @@ jobs:
 
       - name: Set version number
         run: |
-          env:NGBTEST=$(./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //')
+          NGBTEST=$(./gradlew :printVersion -PbuildNumber=555 |  grep "Project version is " | sed 's/^.*is //')
           echo $NGBTEST >> $env:GITHUB_ENV
 
       - uses: actions/setup-node@v3
