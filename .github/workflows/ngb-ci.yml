@@ -70,7 +70,7 @@ jobs:
       #   if: "!contains(github.ref_name, 'release')"
       #   uses: gradle/gradle-build-action@v2
       #   with:
-      - run: ./gradlew buildJar buildCli buildDoc -PbuildNumber=${{ env:NGBTEST }}.${{ github.sha }} -PnoTest --debug
+      - run: ./gradlew buildJar buildCli buildDoc -PbuildNumber=${{ env.NGBTEST }}.${{ github.sha }} -PnoTest --debug
 
       - name: Gradle Build Action with Docker
         if: "contains(github.ref_name, 'release')"
