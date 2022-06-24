@@ -79,7 +79,7 @@ jobs:
       - name: Upload a Build Artifact on the GitHub Actions job page
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: ngb-${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
+          name: ngb-${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}.${{ env.GITHUB_SHA }}
           path: dist
           retention-days: 7
           
@@ -104,8 +104,8 @@ jobs:
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'release')) }}
         run: |
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USER }} --password-stdin
-            docker tag ngb:latest ${{ secrets.DOCKER_USER }}/ngb:${{ env.VERSION_NUMBER }}
-            docker push ${{ secrets.DOCKER_USER }}/ngb:${{ env.VERSION_NUMBER }}
+            docker tag ngb:latest ${{ secrets.DOCKER_USER }}/ngb:${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
+            docker push ${{ secrets.DOCKER_USER }}/ngb:${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
 
       - name: Create GitHub Release
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'release')) }}
