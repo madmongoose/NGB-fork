@@ -70,7 +70,7 @@ jobs:
         if: "contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.NGBTEST }}.${{ github.sha }} -PnoTest
+          arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }} -PnoTest
 
       - name: Gradle Coverage Action
         uses: gradle/gradle-build-action@v2
@@ -80,7 +80,7 @@ jobs:
       - name: Upload a Build Artifact on the GitHub Actions job page
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: ngb-${{ env.NGB_VER }}.ga.${{ github.sha }}
+          name: ngb-${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
           path: dist
           retention-days: 7
           
@@ -98,7 +98,7 @@ jobs:
       
       - name: Copy a Build Artifact to AWS
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'develop') || contains(github.ref_name, 'release')) }}
-        run: aws s3 cp dist s3://ngb-oss-builds/public/builds/$GITHUB_REF_NAME/${{ env.NGB_VER }}.ga.${{ github.sha }}/ --recursive
+        run: aws s3 cp dist s3://ngb-oss-builds/public/builds/$GITHUB_REF_NAME/${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}.{{ github.sha }}/ --recursive
         shell: bash
 
       - name: Publishing to Docker Hub
