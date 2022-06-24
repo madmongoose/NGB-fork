@@ -12,7 +12,7 @@ on:
     - 'develop'
     - 'release/**'
     paths-ignore:
-      #- ".github/workflows/**"
+      - ".github/workflows/**"
       - ".README.md"
       - ".gitignore"
   pull_request:
@@ -48,7 +48,6 @@ jobs:
       
       - name: Correcting a Build Number
         run: echo "BUILD_NUMBER=$(echo $((${{ github.run_number }}+653)))" >> $GITHUB_ENV
-      - run: echo $BUILD_NUMBER
 
       - uses: actions/setup-node@v3
         with:
@@ -64,13 +63,32 @@ jobs:
         if: "!contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }} -PnoTest
+          arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.BUILD_NUMBER }}.${{ github.sha }} -PnoTest
+      - run: mv dist/catgenome.jar dist/catgenome-h2.jar
 
+      - name: Gradle Build Action 2
+        if: "!contains(github.ref_name, 'release')"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: buildJar -PbuildNumber=${{ env.BUILD_NUMBER }}.${{ github.sha }} -PnoTest -Pdatabase=postgres
+      - run: | 
+          mv dist/catgenome.jar dist/catgenome-psql.jar
+          cp dist/catgenome-h2.jar dist/catgenome.jar
+      
       - name: Gradle Build Action with Docker
         if: "contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.NGBTEST }}.${{ github.sha }} -PnoTest
+          arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.BUILD_NUMBER }}.${{ github.sha }} -PnoTest
+
+      - name: Gradle Build Action with Docker 2
+        if: "!contains(github.ref_name, 'release')"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: buildJar -PbuildNumber=${{ env.BUILD_NUMBER }}.${{ github.sha }} -PnoTest -Pdatabase=postgres
+      - run: | 
+          mv dist/catgenome.jar dist/catgenome-psql.jar
+          cp dist/catgenome-h2.jar dist/catgenome.jar
 
       - name: Gradle Coverage Action
         uses: gradle/gradle-build-action@v2
@@ -80,7 +98,7 @@ jobs:
       - name: Upload a Build Artifact on the GitHub Actions job page
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: ngb-${{ env.NGB_VER }}.ga.${{ github.sha }}
+          name: ngb-${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}.${{ github.sha }}
           path: dist
           retention-days: 7
           
@@ -98,21 +116,21 @@ jobs:
       
       - name: Copy a Build Artifact to AWS
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'develop') || contains(github.ref_name, 'release')) }}
-        run: aws s3 cp dist s3://ngb-oss-builds/public/builds/$GITHUB_REF_NAME/${{ env.NGB_VER }}.ga.${{ github.sha }}/ --recursive
+        run: aws s3 cp dist s3://ngb-ga-test/public/builds/$GITHUB_REF_NAME/${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}/ --recursive
         shell: bash
 
       - name: Publishing to Docker Hub
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'release')) }}
         run: |
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USER }} --password-stdin
-            docker tag ngb:latest ${{ secrets.DOCKER_USER }}/ngb:${{ env.NGB_VER }}
-            docker push ${{ secrets.DOCKER_USER }}/ngb:${{ env.NGB_VER }}
+            docker tag ngb:latest ${{ secrets.DOCKER_USER }}/ngb:${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
+            docker push ${{ secrets.DOCKER_USER }}/ngb:${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
 
       - name: Create GitHub Release
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'release')) }}
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/catgenome.jar,dist/ngb-cli.tar.gz,dist/ngb-docs.tar.gz"
-          tag: ${{ env.NGB_VER }}
-          name: Release ${{ env.NGB_VER }}
+          tag: ${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
+          name: Release ${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
           token: ${{ secrets.GITHUB_TOKEN }}
