@@ -47,7 +47,7 @@ jobs:
           cache: "gradle"
       
       - name: Correcting a Build Number
-         run: echo "BUILD_NUMBER=$(echo $((${{ github.run_number }}+653)))" >> $GITHUB_ENV
+        run: echo "BUILD_NUMBER=$(echo $((${{ github.run_number }}+653)))" >> $GITHUB_ENV
 
       - uses: actions/setup-node@v3
         with:
