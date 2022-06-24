@@ -12,7 +12,7 @@ on:
     - 'develop'
     - 'release/**'
     paths-ignore:
-      #- ".github/workflows/**"
+      - ".github/workflows/**"
       - ".README.md"
       - ".gitignore"
   pull_request:
@@ -105,14 +105,14 @@ jobs:
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'release')) }}
         run: |
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USER }} --password-stdin
-            docker tag ngb:latest ${{ secrets.DOCKER_USER }}/ngb:${{ env.NGB_VER }}
-            docker push ${{ secrets.DOCKER_USER }}/ngb:${{ env.NGB_VER }}
+            docker tag ngb:latest ${{ secrets.DOCKER_USER }}/ngb:${{ env.VERSION_NUMBER }}
+            docker push ${{ secrets.DOCKER_USER }}/ngb:${{ env.VERSION_NUMBER }}
 
       - name: Create GitHub Release
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'release')) }}
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/catgenome.jar,dist/ngb-cli.tar.gz,dist/ngb-docs.tar.gz"
-          tag: ${{ env.NGB_VER }}
-          name: Release ${{ env.NGB_VER }}
+          tag: ${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
+          name: Release ${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
           token: ${{ secrets.GITHUB_TOKEN }}
