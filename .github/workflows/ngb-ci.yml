@@ -65,6 +65,7 @@ jobs:
         with:
           arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.BUILD_NUMBER }}.${{ github.sha }} -PnoTest
       - run: mv dist/catgenome.jar dist/catgenome-h2.jar
+        if: "!contains(github.ref_name, 'release')"
 
       - name: Gradle Build Action 2
         if: "!contains(github.ref_name, 'release')"
@@ -74,12 +75,15 @@ jobs:
       - run: | 
           mv dist/catgenome.jar dist/catgenome-psql.jar
           cp dist/catgenome-h2.jar dist/catgenome.jar
+        if: "!contains(github.ref_name, 'release')"
       
       - name: Gradle Build Action with Docker
         if: "contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
         with:
           arguments: buildJar buildCli buildDoc buildDocker -PbuildNumber=${{ env.BUILD_NUMBER }}.${{ github.sha }} -PnoTest
+      - run: mv dist/catgenome.jar dist/catgenome-h2.jar
+        if: "contains(github.ref_name, 'release')"
 
       - name: Gradle Build Action with Docker 2
         if: "!contains(github.ref_name, 'release')"
@@ -89,6 +93,7 @@ jobs:
       - run: | 
           mv dist/catgenome.jar dist/catgenome-psql.jar
           cp dist/catgenome-h2.jar dist/catgenome.jar
+        if: "contains(github.ref_name, 'release')"
 
       - name: Gradle Coverage Action
         uses: gradle/gradle-build-action@v2
