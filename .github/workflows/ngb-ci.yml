@@ -64,7 +64,17 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: buildJar buildCli buildDoc -PbuildNumber=${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }} -PnoTest
+      - run: mv dist/catgenome.jar dist/catgenome-h2.jar
 
+      - name: Gradle Build Action 2
+        if: "!contains(github.ref_name, 'release')"
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: buildJar -PbuildNumber=${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }} -PnoTest -Pdatabase=postgres
+      - run: | 
+          mv dist/catgenome.jar dist/catgenome-psql.jar
+          cp dist/catgenome-h2.jar dist/catgenome.jar
+      
       - name: Gradle Build Action with Docker
         if: "contains(github.ref_name, 'release')"
         uses: gradle/gradle-build-action@v2
@@ -115,3 +125,4 @@ jobs:
           tag: ${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
           name: Release ${{ env.VERSION_NUMBER }}.${{ env.BUILD_NUMBER }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
