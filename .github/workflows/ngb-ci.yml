@@ -134,7 +134,7 @@ jobs:
       
       - name: Copy a build artifact to AWS
         if: ${{ github.event_name == 'push' && (contains(github.ref_name, 'develop') || contains(github.ref_name, 'release')) }}
-        run: aws s3 cp dist/${{ env.NGB_VERSION }} s3://ngb-ga-test/public/builds/$GITHUB_REF_NAME/${{ env.NGB_VERSION }}/ --recursive
+        run: aws s3 cp dist/${{ env.NGB_VERSION }} s3://ngb-oss-builds/public/builds/$GITHUB_REF_NAME/${{ env.NGB_VERSION }}/ --recursive
         shell: bash
 
       - name: Publishing to Docker Hub
