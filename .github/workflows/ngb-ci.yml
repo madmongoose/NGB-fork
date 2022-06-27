@@ -22,7 +22,7 @@ on:
       - ".README.md"
       - ".gitignore"
   workflow_dispatch:
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,7 +39,7 @@ jobs:
           cache: "gradle"
       
       - name: Correcting a Build Number
-        run: echo "BUILD_NUMBER=$(echo $((${{ github.run_number }}+4000)))" >> $GITHUB_ENV
+        run: echo "BUILD_NUMBER=$(echo $((${{ github.run_number }}+5000)))" >> $GITHUB_ENV
 
       - uses: actions/setup-node@v3
         with:
