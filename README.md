@@ -133,4 +133,4 @@ $ ./gradlew buildJar buildCli
 # Build docker with documentation
 $ ./gradlew buildDocker buildDoc
 ```
-test dev4
+test dev5
